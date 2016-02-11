@@ -363,7 +363,22 @@ def do_swing(noun_num)
 end
 
 def do_climb(noun_num)
+    if noun_num == 14 and $carrying_object[14] then
+        $msg = "It isn't attached to anything!"
+    end
+
+    if noun_num == 14 and not $carrying_object[14] and
+        $player_location == 7 then
+        if not $object_flag[14] then
+            $msg = "You see thick forest and cliff south"
+            $object_flag[14] = true
+        else
+            $msg = "Going down!"
+            $object_flag[14] = false
+        end
+    end
 end
+
 def do_light(noun_num)
 end
 def do_unlight(noun_num)
