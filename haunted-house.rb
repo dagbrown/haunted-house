@@ -172,7 +172,7 @@ def do_move(verb_num, noun_num)
 
     if ( $player_location == 26 and not $object_flags[0] ) and
         ( direction == 1 or direction == 4 ) then
-        $msg = "It is too dark to move.  You need a light."
+        $msg = "It is too dark to go that way.  You need a light."
         return
     end
 
@@ -260,7 +260,7 @@ end
 def do_open(noun_num)
     if $player_location == 43 and
         ( noun_num == 28 or noun_num == 29 ) then
-        $object_flags[17] == false
+        $object_flags[17] = false
         $msg = "Drawer open."
     end
 
@@ -270,7 +270,7 @@ def do_open(noun_num)
 
     if $player_location == 38 and noun_num == 32 then
         $msg = "That's just creepy!"
-        $object_flags[2] == false
+        $object_flags[2] = false
     end
 end
 
@@ -407,7 +407,7 @@ def do_spray(noun_num)
     if noun_num == 26 and $carrying_object[16] then
         $msg = "Hisssss"
         if $object_flags[26] then
-            $object_flags[26] == 0
+            $object_flags[26] = 0
             $msg = "Pfft!  Got them!"
         end
     end
@@ -531,7 +531,7 @@ while true
     end
 
     if $player_location == 44 and rand(2) == 1 and not $object_flags[24] then
-        $object_flags[27] == 1
+        $object_flags[27] = 1
     end
 
     # The lamp!
