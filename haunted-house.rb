@@ -541,7 +541,7 @@ while true
 
     # I like how there's suddenly a bunch of game logic here in the
     # middle of the input error handler
-    if $object_flags[26] and $player_location == 13 and rand(3) == 3 and \
+    if $object_flags[26] and $player_location == 13 and rand(3) == 2 and \
         verb_num != 21 then
         $msg = "Bats attacking!"
         next
