@@ -10,6 +10,10 @@
 # In the original code, they did the variable initialization in a
 # subroutine right at the end of the prorgram.  I've just moved it all
 # to the beginning.
+#
+# Also, globals!  It's 1983 again!  Everything goes in global variables
+# because 1983-vintage Microsoft BASIC didn't have any such thing as
+# local variables.
 $verbs=%w{help inventory go n s w e u d get take open examine read say
          dig swing climb light unlight spray use unlock leave score}
 
@@ -22,33 +26,38 @@ $exits=%w{se we we swe we we swe ws
          se nsw e we nw s sw nw
          ne nwe we we we nwe nwe w}
 
-$exit_name = { "s" =>"south", "n" =>"north", "e" =>"east", "w" =>"west", 
+# I added this because "Exits: N, E," was just too ugly for me
+$exit_name = { "s" =>"south", "n" =>"north", "e" =>"east", "w" =>"west",
               "u" =>"up", "d" =>"down"}
 
-$rooms=["Dark corner", "Overgrown garden", "By large woodpile", 
-       "Yard by rubbish", "Weedpatch", "Forest", "Thick forest",
-       "Blasted tree", "Corner of house", "Entrance to kitchen",
-       "Kitchen and Grimy Cooker", "Scullery Door", "Room with inches of dust",
-       "Rear turret room", "Clearing by house", "Path", "Side of house",
-       "Back of hallway", "Dark alcove", "Small dark room",
-       "Bottom of spiral staircase", "Wide passage", "Slippery steps",
-       "Clifftop", "Near crumbling wall", "Gloomy passage", "Pool of light",
-       "Impressive vaulted hallway", "Hall by thick wooden door",
-       "Trophy room", "Cellar with barred window", "Cliff path",
-       "Cupboard with hanging coat", "Front hall", "Sitting room",
-       "Secret room", "Steep marble stairs", "Dining room",
-       "Deep cellar with coffin", "Cliff path", "Closet", "Front lobby",
-       "Library of evil books", "Study with desk and hole in wall",
-       "Weird cobwebby room", "Very cold chamber", "Spooky room",
-       "Cliff path by marsh", "Rubble-strewn verandah", "Front porch",
-       "Front tower", "Sloping corridor", "Upper gallery", "Marsh by wall",
-       "Marsh", "Soggy path", "By twisted railings", "Path through iron gate",
-       "By railings", "Beneath front tower", "Debris from crumbling facade",
-       "Large fallen brickwork", "Rotting stone arch", "Crumbling clifftop"]
+$rooms=["Dark corner", "Overgrown garden", "By large woodpile",
+        "Yard by rubbish", "Weedpatch", "Forest", "Thick forest",
+        "Blasted tree", "Corner of house", "Entrance to kitchen",
+        "Kitchen and Grimy Cooker", "Scullery Door",
+        "Room with inches of dust", "Rear turret room",
+        "Clearing by house", "Path", "Side of house",
+        "Back of hallway", "Dark alcove", "Small dark room",
+        "Bottom of spiral staircase", "Wide passage", "Slippery steps",
+        "Clifftop", "Near crumbling wall", "Gloomy passage",
+        "Pool of light", "Impressive vaulted hallway",
+        "Hall by thick wooden door", "Trophy room",
+        "Cellar with barred window", "Cliff path",
+        "Cupboard with hanging coat", "Front hall", "Sitting room",
+        "Secret room", "Steep marble stairs", "Dining room",
+        "Deep cellar with coffin", "Cliff path", "Closet", "Front lobby",
+        "Library of evil books", "Study with desk and hole in wall",
+        "Weird cobwebby room", "Very cold chamber", "Spooky room",
+        "Cliff path by marsh", "Rubble-strewn verandah", "Front porch",
+        "Front tower", "Sloping corridor", "Upper gallery",
+        "Marsh by wall", "Marsh", "Soggy path", "By twisted railings",
+        "Path through iron gate", "By railings", "Beneath front tower",
+        "Debris from crumbling facade", "Large fallen brickwork",
+        "Rotting stone arch", "Crumbling clifftop"]
 
 # The first 18 of these are "gettable" objects, the rest are just things
 # you can sort of generally refer to
 $gettable_objects = 18
+$carrying_object = [ false ] * ( $gettable_objects + 1 )
 $nouns=["", "painting", "ring", "magic spells", "goblet", "scrolls",
         "coins", "statue", "candlestick", "matches", "vacuum",
         "batteries", "shovel", "axe", "rope", "boat", "aerosol",
@@ -58,10 +67,12 @@ $nouns=["", "painting", "ring", "magic spells", "goblet", "scrolls",
 
 # man, if only old BASIC programmers had any idea of data structures
 $locations=[65,46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
-# If an object's flag is true, then that means the object is not visible (it's
-# hidden in some way).  Counterintuitive!
-$object_flags = [ false ] * $nouns.size # I love Ruby!
-$carrying_object = [ false ] * ( $gettable_objects + 1 )
+# Object 0 is the lamp you get when you combine the candle, candlestick
+# and matches.  So it's location is off the map.
+
+# If an object's flag is true, then that means the object is not visible
+# (it's hidden in some way).  Counterintuitive!
+$object_flags = [ false ] * $nouns.size
 [18,17,2,26,28,23].each do |i|
     $object_flags[i] = true
 end
@@ -193,7 +204,7 @@ def do_move(verb_num, noun_num)
         return
     end
 
-    if ( $player_location > 26 and $player_location < 30) and 
+    if ( $player_location > 26 and $player_location < 30) and
         not $object_flags[0] then
         $msg = "It's too dark to move."
         return
