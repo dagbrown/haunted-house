@@ -1,0 +1,277 @@
+#!/usr/bin/ruby
+
+# Haunted House, the old adventure game from the 1983 Usborne book
+# "Write Your Own Adventure Programs For Your Microcomputer" by Jenny
+# Tyler and Les Howarth
+#
+# This is translated directly from BASIC, and it shows.
+
+
+# In the original code, they did the variable initialization in a
+# subroutine right at the end of the prorgram.  I've just moved it all
+# to the beginning.
+$verbs=%w{help inventory go n s e w u d get take open examine read say
+         dig swing climb light unlight spray use unlock leave score}
+
+$exits=%w{se we we swe we we swe ws
+         ns se we nw se w ne nsw
+         ns ns se we nsud se wsud ns
+         n ns nse we we nsw ns ns
+         s nse nsw s nsud n n ns
+         ne nw ne w nse we w ns
+         se nsw e we nw s sw nw
+         ne nwe we we we nwe nwe w}
+
+$exit_name = { "s" =>"south", "n" =>"north", "e" =>"east", "w" =>"west", 
+              "u" =>"up", "d" =>"down"}
+
+$rooms=["Dark corner", "Overgrown garden", "By large woodpile", 
+       "Yard by rubbish", "Weedpatch", "Forest", "Thick forest",
+       "Blasted tree", "Corner of house", "Entrance to kitchen",
+       "Kitchen and Grimy Cooker", "Scullery Door", "Room with inches of dust",
+       "Rear turret room", "Clearing by house", "Path", "Side of house",
+       "Back of hallway", "Dark alcove", "Small dark room",
+       "Bottom of spiral staircase", "Wide passage", "Slippery steps",
+       "Clifftop", "Near crumbling wall", "Gloomy passage", "Pool of light",
+       "Impressive vaulted hallway", "Hall by thick wooden door",
+       "Trophy room", "Cellar with barred window", "Cliff path",
+       "Cupboard with hanging coat", "Front hall", "Sitting room",
+       "Secret room", "Steep marble stairs", "Dining room",
+       "Deep cellar with coffin", "Cliff path", "Closet", "Front lobby",
+       "Library of evil books", "Study with desk and hole in wall",
+       "Weird cobwebby room", "Very cold chamber", "Spooky room",
+       "Cliff path by marsh", "Rubble-strewn verandah", "Front porch",
+       "Front tower", "Sloping corridor", "Upper gallery", "Marsh by wall",
+       "Marsh", "Soggy path", "By twisted railings", "Path through iron gate",
+       "By railings", "Beneath front tower", "Debris from crumbling facade",
+       "Large fallen brickwork", "Rotting stone arch", "Crumbling clifftop"]
+
+# The first 18 of these are "gettable" objects, the rest are just things
+# you can sort of generally refer to
+$gettable_objects = 18
+$nouns=["painting", "ring", "magic spells", "goblet", "scrolls",
+ "coins", "statue", "candlestick", "matches", "vacuum",
+ "batteries", "shovel", "axe", "rope", "boat", "aerosol",
+ "candle", "key", "north", "south", "west", "east", "up",
+ "down", "door", "bats", "ghosts", "drawer", "desk", "coat",
+ "rubbish", "coffin", "books", "xzanfar", "wall", "spells"]
+
+# man, if only old BASIC programmers had any idea of data structures
+$locations=[46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
+$object_flags = [ false ] * $nouns.size # I love Ruby!
+$carrying_object = [ false ] * $gettable_objects
+[18,17,2,26,28,23].each do |i|
+    $object_flags[i] = true
+end
+
+$player_location = 57
+$candle_length = 60
+
+$msg = "OK"
+
+def do_action(verb_num, noun_num)
+    case verb_num
+    when 0
+        do_help
+    when 1
+        do_inventory
+    when 2..8
+        do_move(verb_num, noun_num)
+    end
+end
+
+def do_help
+    puts "Words I know:"
+    puts $verbs.join(", ")
+    $msg = ""
+    pause
+end
+
+def do_inventory
+    puts "You are carrying:"
+    (0..$gettable_objects).each do |i|
+        if $carrying_object[i] then
+            print $objects[i],", "
+        end
+    end
+    $msg = ""
+    pause
+end
+
+def do_move(verb_num, noun_num)
+    direction = 0
+    if not noun_num then direction=verb_num - 3 end
+    if (19..24).include? noun_num then
+        direction = noun_num - 19
+    end
+
+    # special cases for up and down because they don't really exist
+    if $player_location == 20 then
+        if direction == 5 then direction = 1 end
+        if direction == 6 then direction = 3 end
+    end
+
+    if $player_location == 22 then
+        if direction == 5 then direction = 3 end
+        if direction == 6 then direction = 2 end
+    end
+
+    if $player_location == 36 then
+        if direction == 5 then direction = 2 end
+        if direction == 6 then direction = 1 end
+    end
+
+    # Some logic for the special cases where you're simply not allowed
+    # to move at all
+    if $object_flags[14] then
+        $msg = "Crash! You fell out of the tree!"
+        $object_flags[14] = false
+        return
+    end
+
+    if $object_flags[27] and $player_location == 52 then
+        $msg = "Ghosts will not let you move"
+        return
+    end
+
+    if $player_location == 45 and $carrying_object[1] and
+        not $object_flags[34] then
+        $msg = "There is a magical barrier to the west."
+        return
+    end
+
+    if ( $player_location == 26 and not $object_flags[0] ) and
+        ( direction == 1 or direction == 4 ) then
+        $msg = "It is too dark to move.  You need a light."
+        return
+    end
+
+    if $player_location == 54 and not $carrying_object[15] then
+        $msg = "You're stuck!"
+        return
+    end
+
+    if $carrying_object[15] and not ( $player_location == 53 or
+                                      $player_location == 54 or
+                                      $player_location == 55 or
+                                      $player_location == 47 ) then
+        $msg = "You can't carry a boat!"
+        return
+    end
+
+    if ( $player_location > 26 and $player_location < 30) and 
+        not $object_flags[0] then
+        $msg = "It's too dark to move."
+        return
+    end
+
+    # Alright, special cases over and done with, let's handle a normal
+    # move.
+    $object_flags[35] = false
+    exits = $exits[$player_location].split(//)
+    if direction == 1 and exits.include? "n"
+        $player_location -= 8
+        $object_flags[35] = true
+    elsif direction == 2 and exits.include? "s"
+        $player_location += 8
+        $object_flags[35] = true
+    elsif direction == 3 and exits.include? "w"
+        $player_location -= 1
+        $object_flags[35] = true
+    elsif direction == 4 and exits.include? "e"
+        $player_location += 1
+        $object_flags[35] = true
+    end
+
+    $msg = "OK"
+
+    if not $object_flags[35] then
+        $msg = "Can't go that way!"
+    end
+
+    if direction == 0 then
+        $msg = "Go where?"
+    end
+
+    if $player_location == 41 and $object_flags[23] then
+        $exits[49] = "sw"
+        $msg = "The door slams shut behind you!"
+        $object_flags[23] = false
+    end
+end
+
+def pause
+    print "Press return to continue:"
+    gets
+end
+
+# get this show started!  Here's the main loop
+while true
+    system("clear") # boy, what an improvement over BASIC's "cls" this is,
+                    # calling a separate program just to clear the screen
+    puts "Haunted House"
+    puts "-------------"
+    print "Your location: "
+    puts $rooms[$player_location]
+    print "Exits: "
+    puts $exits[$player_location].split(//).map { |e| $exit_name[e] }.join(", ")
+    (0..$gettable_objects-1).each do |i|
+        if $locations[i] == $player_location and not $object_flags[i] then
+            puts "You can see the #{$objects[i]} here."
+        end
+    end
+    puts "=========================="
+    puts $msg
+    print "What will you do now? "
+    user_input = gets
+    # this was like 15 lines of code in the original!
+    ( verb, noun ) = user_input.split(" ") 
+    verb_num = $verbs.index(verb)
+    noun_num = $nouns.index(noun)
+
+    # first, error messages
+    if noun and not noun_num then
+        $msg = "That's silly."
+    end
+
+    if not noun then
+        $msg = "I need two words."
+    end
+
+    if verb_num.nil? and not noun_num.nil? then
+        $msg = "You can't \"#{user_input}\"!"
+    end
+
+    if verb_num.nil? and noun_num.nil? then
+        $msg = "I didn't understand that."
+    end
+
+    if not verb_num.nil? and not noun_num.nil? and
+        not $carrying_object[noun_num]
+        $msg = "You don't have " + noun
+    end
+
+    # I like how there's suddenly a bunch of game logic here in the
+    # middle of the input error handler
+    if $object_flags[26] and $player_location == 13 and rand(3) == 3 and \
+        verb_num != 21 then
+        $msg = "Bats attacking!"
+        next
+    end
+
+    if $player_location == 44 and rand(2) == 1 and not $object_flags[24] then
+        $object_flags[27] == 1
+    end
+
+    # The lamp!
+    if $object_flags[0] then $candle_length -= 1 end
+    do_action(verb_num,noun_num)
+    if $candle_length == 10 then
+        $msg = "Your candle is waning!"
+    end
+
+    if $candle_length == 0 then
+        $msg = "Your candle is out!"
+    end
+end
+
