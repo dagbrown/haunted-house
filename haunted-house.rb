@@ -59,7 +59,7 @@ $nouns=["", "painting", "ring", "magic spells", "goblet", "scrolls",
 # man, if only old BASIC programmers had any idea of data structures
 $locations=[65,46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
 $object_flags = [ false ] * $nouns.size # I love Ruby!
-$carrying_object = [ false ] * $gettable_objects
+$carrying_object = [ false ] * ( $gettable_objects + 1 )
 [18,17,2,26,28,23].each do |i|
     $object_flags[i] = true
 end
@@ -414,12 +414,60 @@ def do_spray(noun_num)
 end
 
 def do_use(noun_num)
+    if noun_num == 10 and $carrying_object[10] and $carrying_object[11] then
+        $msg = "Switched on"
+        $object_flag[24] = true
+    end
+
+    if $object_flag[24] and $object_flag[27] then
+        $msg = "Whizz!  Vacuumed the ghosts up!"
+        $object_flag[27] = false
+    end
 end
+
 def do_unlock(noun_num)
+    if $player_location == 43 and ( noun_num == 27 or noun_num == 28 ) then
+        do_open(noun_num)
+    end
+
+    if $player_location == 28 and
+        noun_num == 25 and
+        not $object_flag[25] and
+        $carrying_object[18] then
+        $object_flag[25] = true
+        $exits[$player_location] = "sew"
+        $rooms[$player_location] = "Huge open door"
+        $msg = "The key turns!"
+    end
 end
+
 def do_leave(noun_num)
+    if $carrying_object[noun_num] then
+        $carrying_object[noun_num] = false
+        $locations[noun_num] = $player_location
+        $msg = "Done"
+    end
 end
+
 def do_score
+    # okay, this line wasn't even remotely like this in the original BASIC
+    score = $carrying_object[1..$gettable_objects].find_all { |o| o }.length
+
+    if score == 17 and not $carrying_object[15] and $player_location != 57
+        puts "You have everything!"
+        puts "Return to the gate for final score."
+    end
+
+    if score == 17 and $player_location == 57 and not $carrying_object[15]
+        puts "Double score for getting back here!"
+    end
+
+    puts "Your score is #{score}"
+    if score > 18 then
+        puts "Well done!  You completed the game!"
+        exit
+    end
+    pause
 end
 
 def pause
