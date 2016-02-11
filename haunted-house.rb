@@ -10,7 +10,7 @@
 # In the original code, they did the variable initialization in a
 # subroutine right at the end of the prorgram.  I've just moved it all
 # to the beginning.
-$verbs=%w{help inventory go n s e w u d get take open examine read say
+$verbs=%w{help inventory go n s w e u d get take open examine read say
          dig swing climb light unlight spray use unlock leave score}
 
 $exits=%w{se we we swe we we swe ws
@@ -91,7 +91,7 @@ def do_inventory
     puts "You are carrying:"
     (0..$gettable_objects).each do |i|
         if $carrying_object[i] then
-            print $objects[i],", "
+            print $nouns[i],", "
         end
     end
     $msg = ""
@@ -100,7 +100,7 @@ end
 
 def do_move(verb_num, noun_num)
     direction = 0
-    if not noun_num then direction=verb_num - 3 end
+    if not noun_num then direction=verb_num - 2 end
     if (19..24).include? noun_num then
         direction = noun_num - 19
     end
@@ -169,6 +169,7 @@ def do_move(verb_num, noun_num)
     # move.
     $object_flags[35] = false
     exits = $exits[$player_location].split(//)
+    puts "Direction number: #{direction}"
     if direction == 1 and exits.include? "n"
         $player_location -= 8
         $object_flags[35] = true
@@ -217,7 +218,7 @@ while true
     puts $exits[$player_location].split(//).map { |e| $exit_name[e] }.join(", ")
     (0..$gettable_objects-1).each do |i|
         if $locations[i] == $player_location and not $object_flags[i] then
-            puts "You can see the #{$objects[i]} here."
+            puts "You can see the #{$nouns[i]} here."
         end
     end
     puts "=========================="
