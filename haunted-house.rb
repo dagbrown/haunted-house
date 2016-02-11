@@ -302,6 +302,21 @@ def do_examine(noun_num)
 end
 
 def do_read(noun_num)
+    if $player_location == 42 and noun_num == 33 then
+        $msg = "They are demonic works"
+    end
+
+    if ( noun_num == 3 or noun_num == 36 ) and
+        $carrying_object[3] and
+        not $object_flag[34] then
+        $msg = "Use this word with care: 'xzanfar'"
+    end
+
+    if $carrying_object[5] and noun_num == 5 then
+        $msg = "The script is in an alien tongue."
+    end
+end
+
 end
 def do_say(noun_num)
 end
