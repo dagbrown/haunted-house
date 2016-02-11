@@ -452,6 +452,7 @@ end
 def do_score
     # okay, this line wasn't even remotely like this in the original BASIC
     score = $carrying_object[1..$gettable_objects].find_all { |o| o }.length
+    $msg = ""
 
     if score == 17 and not $carrying_object[15] and $player_location != 57
         puts "You have everything!"
