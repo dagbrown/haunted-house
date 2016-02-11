@@ -308,7 +308,7 @@ def do_read(noun_num)
 
     if ( noun_num == 3 or noun_num == 36 ) and
         $carrying_object[3] and
-        not $object_flag[34] then
+        not $object_flags[34] then
         $msg = "Use this word with care: 'xzanfar'"
     end
 
@@ -325,7 +325,7 @@ def do_say(noun_num, noun_str)
         if $player_location != 45 then
             $player_location = rand(64)
         else
-            $object_flag[34] = true
+            $object_flags[34] = true
         end
     end
 end
@@ -369,12 +369,12 @@ def do_climb(noun_num)
 
     if noun_num == 14 and not $carrying_object[14] and
         $player_location == 7 then
-        if not $object_flag[14] then
+        if not $object_flags[14] then
             $msg = "You see thick forest and cliff south"
-            $object_flag[14] = true
+            $object_flags[14] = true
         else
             $msg = "Going down!"
-            $object_flag[14] = false
+            $object_flags[14] = false
         end
     end
 end
@@ -391,14 +391,14 @@ def do_light(noun_num)
         if $carrying_object[17] and $carrying_object[8] and
             $carrying_object[9] then
             $msg = "It casts a flickering light"
-            $object_flag[0] = true
+            $object_flags[0] = true
         end
     end
 end
 
 def do_unlight(noun_num)
-    if $object_flag[0] then
-        $object_flag[0] = false
+    if $object_flags[0] then
+        $object_flags[0] = false
         $msg = "Extinguished."
     end
 end
@@ -406,8 +406,8 @@ end
 def do_spray(noun_num)
     if noun_num == 26 and $carrying_object[16] then
         $msg = "Hisssss"
-        if $object_flag[26] then
-            $object_flag[26] == 0
+        if $object_flags[26] then
+            $object_flags[26] == 0
             $msg = "Pfft!  Got them!"
         end
     end
@@ -416,12 +416,12 @@ end
 def do_use(noun_num)
     if noun_num == 10 and $carrying_object[10] and $carrying_object[11] then
         $msg = "Switched on"
-        $object_flag[24] = true
+        $object_flags[24] = true
     end
 
-    if $object_flag[24] and $object_flag[27] then
+    if $object_flags[24] and $object_flags[27] then
         $msg = "Whizz!  Vacuumed the ghosts up!"
-        $object_flag[27] = false
+        $object_flags[27] = false
     end
 end
 
@@ -432,9 +432,9 @@ def do_unlock(noun_num)
 
     if $player_location == 28 and
         noun_num == 25 and
-        not $object_flag[25] and
+        not $object_flags[25] and
         $carrying_object[18] then
-        $object_flag[25] = true
+        $object_flags[25] = true
         $exits[$player_location] = "sew"
         $rooms[$player_location] = "Huge open door"
         $msg = "The key turns!"
