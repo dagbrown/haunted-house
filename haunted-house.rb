@@ -49,15 +49,15 @@ $rooms=["Dark corner", "Overgrown garden", "By large woodpile",
 # The first 18 of these are "gettable" objects, the rest are just things
 # you can sort of generally refer to
 $gettable_objects = 18
-$nouns=["painting", "ring", "magic spells", "goblet", "scrolls",
- "coins", "statue", "candlestick", "matches", "vacuum",
- "batteries", "shovel", "axe", "rope", "boat", "aerosol",
- "candle", "key", "north", "south", "west", "east", "up",
- "down", "door", "bats", "ghosts", "drawer", "desk", "coat",
- "rubbish", "coffin", "books", "xzanfar", "wall", "spells"]
+$nouns=["", "painting", "ring", "magic spells", "goblet", "scrolls",
+        "coins", "statue", "candlestick", "matches", "vacuum",
+        "batteries", "shovel", "axe", "rope", "boat", "aerosol",
+        "candle", "key", "north", "south", "west", "east", "up", "down",
+        "door", "bats", "ghosts", "drawer", "desk", "coat", "rubbish",
+        "coffin", "books", "xzanfar", "wall", "spells"]
 
 # man, if only old BASIC programmers had any idea of data structures
-$locations=[46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
+$locations=[65,46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
 $object_flags = [ false ] * $nouns.size # I love Ruby!
 $carrying_object = [ false ] * $gettable_objects
 [18,17,2,26,28,23].each do |i|
@@ -257,6 +257,75 @@ def do_get(noun_num, noun_str)
     end
 end
 
+def do_open(noun_num)
+    if $player_location == 43 and
+        ( noun_num == 28 or noun_num == 29 ) then
+        $object_flags[17] == false
+        $msg = "Drawer open."
+    end
+
+    if $player_location == 28 and noun_num == 25 then
+        $msg = "It's locked."
+    end
+
+    if $player_location == 38 and noun_num == 32 then
+        $msg = "That's just creepy!"
+        $object_flags[2] == false
+    end
+end
+
+def do_examine(noun_num)
+    if noun_num == 30 then
+        $object_flags[18] = false
+        $msg = "Something here!"
+    end
+
+    if noun_num == 31 then
+        $msg = "That's disgusting!"
+    end
+
+    if noun_num == 28 or noun_num == 29 then
+        $msg = "There's a drawer"
+    end
+
+    if noun_num == 33 or noun_num == 5 then
+        do_read(noun_num)
+    end
+
+    if $player_location == 43 and noun_num == 35 then
+        $msg = "There is something beyond..."
+    end
+
+    if noun_num == 32 then
+        do_open(noun_num)
+    end
+end
+
+def do_read(noun_num)
+end
+def do_say(noun_num)
+end
+def do_dig(noun_num)
+end
+def do_swing(noun_num)
+end
+def do_climb(noun_num)
+end
+def do_light(noun_num)
+end
+def do_unlight(noun_num)
+end
+def do_spray(noun_num)
+end
+def do_use(noun_num)
+end
+def do_unlock(noun_num)
+end
+def do_leave(noun_num)
+end
+def do_score
+end
+
 def pause
     print "Press return to continue:"
     gets
@@ -305,7 +374,7 @@ while true
 
     if not verb_num.nil? and not noun_num.nil? and
         not $carrying_object[noun_num]
-        $msg = "You don't have " + noun
+        $msg = "You don't have " + noun.to_s
     end
 
     # I like how there's suddenly a bunch of game logic here in the
