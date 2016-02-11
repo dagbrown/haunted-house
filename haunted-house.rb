@@ -331,7 +331,17 @@ def do_say(noun_num, noun_str)
 end
 
 def do_dig(noun_num)
+    if $carrying_object[12] then
+        $msg = "You made a hole."
+    end
+
+    if $carrying_object[12] and $player_location == 30 then
+        $msg = "Dug the bars out"
+        $rooms[$player_location] = "Hole in wall"
+        $exits[$player_location] = "nse"
+    end
 end
+
 def do_swing(noun_num)
 end
 def do_climb(noun_num)
