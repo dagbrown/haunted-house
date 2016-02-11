@@ -58,6 +58,8 @@ $nouns=["", "painting", "ring", "magic spells", "goblet", "scrolls",
 
 # man, if only old BASIC programmers had any idea of data structures
 $locations=[65,46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
+# If an object's flag is true, then that means the object is not visible (it's
+# hidden in some way).  Counterintuitive!
 $object_flags = [ false ] * $nouns.size # I love Ruby!
 $carrying_object = [ false ] * ( $gettable_objects + 1 )
 [18,17,2,26,28,23].each do |i|
@@ -360,7 +362,7 @@ def do_swing(noun_num)
     if noun_num == 13 and $carrying_object[13] and $player_location == 43
         $exits[$player_location] = "nw"
         $rooms[$player_location] = "Study with secret room"
-        $msg = "You broke then thin wall"
+        $msg = "You broke the thin wall"
     end
 end
 
@@ -463,6 +465,7 @@ def do_score
 
     if score == 17 and $player_location == 57 and not $carrying_object[15]
         puts "Double score for getting back here!"
+        score *= 2
     end
 
     puts "Your score is #{score}"
@@ -488,7 +491,7 @@ while true
     puts $rooms[$player_location]
     print "Exits: "
     puts $exits[$player_location].split(//).map { |e| $exit_name[e] }.join(", ")
-    (0..$gettable_objects-1).each do |i|
+    (1..$gettable_objects).each do |i|
         if $locations[i] == $player_location and not $object_flags[i] then
             puts "You can see the #{$nouns[i]} here."
         end
