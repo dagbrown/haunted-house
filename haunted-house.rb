@@ -86,7 +86,7 @@ def do_action(verb_num, noun_num, noun_str)
     when 13
         do_read(noun_num)
     when 14
-        do_say(noun_num)
+        do_say(noun_num, noun_str)
     when 15
         do_dig(noun_num)
     when 16
@@ -317,9 +317,19 @@ def do_read(noun_num)
     end
 end
 
+def do_say(noun_num, noun_str)
+    $msg = "Okay, \"#{noun_str}.\""
+
+    if $carrying_object[3] and noun_num == 34 then
+        $msg = "*Magic occurs!*"
+        if $player_location != 45 then
+            $player_location = rand(64)
+        else
+            $object_flag[34] = true
+        end
+    end
 end
-def do_say(noun_num)
-end
+
 def do_dig(noun_num)
 end
 def do_swing(noun_num)
