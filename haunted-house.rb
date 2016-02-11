@@ -496,7 +496,7 @@ while true
     print "What will you do now? "
     user_input = gets
     # this was like 15 lines of code in the original!
-    ( verb, noun ) = user_input.split(" ") 
+    ( verb, noun ) = user_input.split(" ",2)
     verb_num = $verbs.index(verb)
     noun_num = $nouns.index(noun)
 
