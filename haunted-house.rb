@@ -380,11 +380,39 @@ def do_climb(noun_num)
 end
 
 def do_light(noun_num)
+    if noun_num == 17 then
+        if $carrying_object[17] and not $carrying_object[8] then
+            $msg = "It will burn your hands"
+        end
+        if $carrying_object[17] and not $carrying_object[9] then
+            $msg = "You have nothing to light it with"
+        end
+
+        if $carrying_object[17] and $carrying_object[8] and
+            $carrying_object[9] then
+            $msg = "It casts a flickering light"
+            $object_flag[0] = true
+        end
+    end
 end
+
 def do_unlight(noun_num)
+    if $object_flag[0] then
+        $object_flag[0] = false
+        $msg = "Extinguished."
+    end
 end
+
 def do_spray(noun_num)
+    if noun_num == 26 and $carrying_object[16] then
+        $msg = "Hisssss"
+        if $object_flag[26] then
+            $object_flag[26] == 0
+            $msg = "Pfft!  Got them!"
+        end
+    end
 end
+
 def do_use(noun_num)
 end
 def do_unlock(noun_num)
