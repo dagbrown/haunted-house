@@ -8,7 +8,7 @@
 
 
 # In the original code, they did the variable initialization in a
-# subroutine right at the end of the prorgram.  I've just moved it all
+# subroutine right at the end of the program.  I've just moved it all
 # to the beginning.
 #
 # Also, globals!  It's 1983 again!  Everything goes in global variables
@@ -68,7 +68,7 @@ $nouns=["", "painting", "ring", "magic spells", "goblet", "scrolls",
 # man, if only old BASIC programmers had any idea of data structures
 $locations=[65,46,38,35,50,13,18,28,42,10,25,26,4,2,7,47,60,43,32]
 # Object 0 is the lamp you get when you combine the candle, candlestick
-# and matches.  So it's location is off the map.
+# and matches.  So its location is off the map.
 
 # If an object's flag is true, then that means the object is not visible
 # (it's hidden in some way).  Counterintuitive!
@@ -562,4 +562,3 @@ while true
         $msg = "Your candle is out!"
     end
 end
-
