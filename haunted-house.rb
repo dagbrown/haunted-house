@@ -69,7 +69,7 @@ $candle_length = 60
 
 $msg = "OK"
 
-def do_action(verb_num, noun_num)
+def do_action(verb_num, noun_num, noun_str)
     case verb_num
     when 0
         do_help
@@ -77,6 +77,36 @@ def do_action(verb_num, noun_num)
         do_inventory
     when 2..8
         do_move(verb_num, noun_num)
+    when 9..10
+        do_get(noun_num, noun_str)
+    when 11
+        do_open(noun_num)
+    when 12
+        do_examine(noun_num)
+    when 13
+        do_read(noun_num)
+    when 14
+        do_say(noun_num)
+    when 15
+        do_dig(noun_num)
+    when 16
+        do_swing(noun_num)
+    when 17
+        do_climb(noun_num)
+    when 18
+        do_light(noun_num)
+    when 19
+        do_unlight(noun_num)
+    when 20
+        do_spray(noun_num)
+    when 21
+        do_use(noun_num)
+    when 22
+        do_unlock(noun_num)
+    when 23
+        do_leave(noun_num)
+    when 24
+        do_score
     end
 end
 
@@ -169,7 +199,6 @@ def do_move(verb_num, noun_num)
     # move.
     $object_flags[35] = false
     exits = $exits[$player_location].split(//)
-    puts "Direction number: #{direction}"
     if direction == 1 and exits.include? "n"
         $player_location -= 8
         $object_flags[35] = true
@@ -198,6 +227,33 @@ def do_move(verb_num, noun_num)
         $exits[49] = "sw"
         $msg = "The door slams shut behind you!"
         $object_flags[23] = false
+    end
+end
+
+def do_get(noun_num, noun_str)
+    if not noun_num then
+        $msg = "I can't get #{noun_str}"
+        return
+    end
+
+    if $locations[noun_num] != $player_location then
+        $msg = "It isn't here."
+    end
+
+    if $object_flags[noun_num] then
+        $msg = "What #{noun_str}?"
+    end
+
+    if $carrying_object[noun_num] then
+        $msg = "You already have it."
+    end
+
+    if noun_num > 0 and
+       $locations[noun_num] == $player_location and
+       not $object_flags[noun_num] then
+        $carrying_object[noun_num] = true
+        $locations[noun_num] = nil
+        $msg = "You have the #{noun_str}"
     end
 end
 
@@ -266,7 +322,7 @@ while true
 
     # The lamp!
     if $object_flags[0] then $candle_length -= 1 end
-    do_action(verb_num,noun_num)
+    do_action(verb_num,noun_num,noun)
     if $candle_length == 10 then
         $msg = "Your candle is waning!"
     end
