@@ -130,9 +130,11 @@ end
 
 def do_move(verb_num, noun_num)
     direction = 0
-    if not noun_num then direction=verb_num - 2 end
+
+    if not noun_num then direction = verb_num - 2 end
+
     if (19..24).include? noun_num then
-        direction = noun_num - 19
+        direction = noun_num - 18
     end
 
     # special cases for up and down because they don't really exist
@@ -494,7 +496,8 @@ while true
     puts "=========================="
     puts $msg
     print "What will you do now? "
-    user_input = gets
+    user_input = gets.chomp
+
     # this was like 15 lines of code in the original!
     ( verb, noun ) = user_input.split(" ",2)
     verb_num = $verbs.index(verb)
