@@ -343,7 +343,25 @@ def do_dig(noun_num)
 end
 
 def do_swing(noun_num)
+    if not $carrying_object[14] and $player_location == 7 then
+        $msg = "This is no time to play games"
+    end
+
+    if noun_num == 14 and $carrying_object[14] then
+        $msg = "You swung it"
+    end
+
+    if noun_num == 13 and $carrying_object[13] then
+        $msg = "Whoosh!"
+    end
+
+    if noun_num == 13 and $carrying_object[13] and $player_location == 43
+        $exits[$player_location] = "nw"
+        $rooms[$player_location] = "Study with secret room"
+        $msg = "You broke then thin wall"
+    end
 end
+
 def do_climb(noun_num)
 end
 def do_light(noun_num)
